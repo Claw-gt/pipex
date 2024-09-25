@@ -6,7 +6,7 @@
 /*   By: clagarci <clagarci@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/24 14:02:03 by clagarci          #+#    #+#             */
-/*   Updated: 2024/09/25 12:28:51 by clagarci         ###   ########.fr       */
+/*   Updated: 2024/09/25 12:30:40 by clagarci         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@ void	change_permissions(char *file)
 }
 
 /*if open() fails, -1 is returned and errno is set to indicate the error.
+The same happens with acces().
 When it creates outfile, it has no permissions at all*/
 void	parse_input(int argc, char *argv[])
 {
@@ -51,7 +52,7 @@ void	parse_input(int argc, char *argv[])
 		perror("outfile");
 		exit (1);
 	}
-	if (access(argv[4], W_OK) != 0)
+	if (access(argv[4], R_OK|W_OK) != 0)
 		change_permissions(argv[4]);
 }
 
