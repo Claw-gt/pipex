@@ -6,7 +6,7 @@
 /*   By: clagarci <clagarci@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/23 17:23:15 by clagarci          #+#    #+#             */
-/*   Updated: 2024/09/25 12:08:00 by clagarci         ###   ########.fr       */
+/*   Updated: 2024/09/25 18:36:54 by clagarci         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,8 +20,4 @@
 # include <fcntl.h>
 # include "../libft/libft.h"
 
-enum
-{
-	ERROR_ARGS_NUMBER = 1,
-};
 #endif
