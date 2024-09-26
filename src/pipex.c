@@ -6,13 +6,54 @@
 /*   By: clagarci <clagarci@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/24 14:02:03 by clagarci          #+#    #+#             */
-/*   Updated: 2024/09/25 18:57:40 by clagarci         ###   ########.fr       */
+/*   Updated: 2024/09/26 15:59:56 by clagarci         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/pipex.h"
 
+void	free_array(char **array)
+{
+	int	i;
 
+	i = 0;
+	while (array[i])
+	{
+		free(array[i]);
+		i++;
+	}
+	free(array);
+}
+
+void	search_command(char *envp[])
+{
+	char	*path_env;
+	char	**path_array;
+
+	while(*envp)
+	{
+		if (ft_strncmp(*envp, "PATH=", 5) == 0)
+		{
+			path_env = ft_substr(*envp, 5, ft_strlen(*envp) - 5);
+			if (path_env == NULL)
+			{
+				perror("Error: Could not allocate memory");
+				exit (1);
+			}
+			path_array = ft_split(path_env, ':');
+			free(path_env);
+			if (path_array == NULL)
+			{
+				perror("Error: Could not allocate memory");
+				exit (1);
+			}
+			break;
+		}
+		envp++;		
+	}
+	ft_printf("path: %s\n", path_array[0]);
+	free_array(path_array);
+}
 void	change_permissions(char *file)	
 {
 	char	*envp[1];
@@ -68,14 +109,14 @@ void	check_files(char *argv[])
 
 void	check_commands(char *argv[])
 {
-	if (access(argv[2], X_OK) != 0)
+	if (access(argv[2], F_OK|X_OK) != 0)
 	{
 		ft_putstr_fd(argv[3], 2);
 		ft_putstr_fd(": command not found\n", 2);
 		//perror(argv[2]);
 		exit (1);
 	}
-	if (access(argv[3], X_OK) != 0)
+	if (access(argv[3], F_OK|X_OK) != 0)
 	{
 		ft_putstr_fd(argv[3], 2);
 		ft_putstr_fd(": command not found\n", 2);
@@ -98,8 +139,9 @@ void	parse_input(int argc, char *argv[])
 int	main(int argc, char *argv[], char *envp[])
 {
 	parse_input(argc, argv);
-	while(*envp)
-        printf("%s\n",*envp++);
+	search_command(envp);
+	// while(*envp)
+    //     printf("%s\n",*envp++);
 	write(1, "Main program started\n", 21);
 	return (0);
 }
