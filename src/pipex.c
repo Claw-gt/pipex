@@ -6,7 +6,7 @@
 /*   By: clagarci <clagarci@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/24 14:02:03 by clagarci          #+#    #+#             */
-/*   Updated: 2024/09/27 13:44:20 by clagarci         ###   ########.fr       */
+/*   Updated: 2024/09/27 16:17:50 by clagarci         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ void	free_array(char **array)
 	free(array);
 }
 
-char	**search_path(char *envp[])
+void	search_path(char *envp[], t_args *arguments)
 {
 	char	*path_env;
 	char	**path_array;
@@ -54,25 +54,41 @@ char	**search_path(char *envp[])
 		env_aux++;		
 	}
 	ft_printf("\npath: %s\n", path_array[2]);
-	return (path_array);
+	arguments->path = path_array;
+	free_array(path_array);
 }
 
-void	search_command(char *argv[])
+t_cmd	search_command(char *cmd)
 {
 	t_cmd	cmd1;
-	t_cmd	cmd2;
-
-	cmd1.cmd_str = ft_split(argv[2], ' ');
-	cmd1.command = cmd1.cmd_str[0];
-	cmd2.cmd_str = ft_split(argv[3], ' ');
-	cmd2.command = cmd2.cmd_str[0];
-	if (!cmd1.cmd_str || !cmd2.cmd_str)
+	int		i;
+	
+	i = 0;
+	cmd1.cmd_str = ft_split(cmd, ' '); //free luego?
+	if (!cmd1.cmd_str)
 		exit(1);
-	ft_printf("arg: %s COMMAND 1: %s\n", argv[2], cmd1.command);
-	ft_printf("arg: %s COMMAND 2: %s", argv[3], cmd2.command);	
-	free_array(cmd1.cmd_str);
-	free_array(cmd2.cmd_str);
+	cmd1.command = ft_strdup(cmd1.cmd_str[0]);
+	if (!cmd1.command)
+		exit(1);
+	cmd1.flags = 
+	printf("Command flag: %s", cmd1.command);
+	while (cmd1.cmd_str[++i])
+	{
+		cmd1.flags[i - 1] =  cmd1.cmd_str[i];
+	}
+	// cmd2.cmd_str = ft_split(argv[3], ' ');
+	// cmd2.command = ft_strdup(cmd2.cmd_str[0]);
+	if (!cmd1.cmd_str) //|| !cmd2.cmd_str)
+		exit(1);
+	ft_printf("arg: %s COMMAND 1: %s FLAG1: %s\n", cmd, cmd1.command, cmd1.flags[0]);
+	//ft_printf("arg: %s COMMAND 2: %s", argv[3], cmd2.command);	
+	// free_array(cmd1.cmd_str);
+	// free_array(cmd2.cmd_str);
+	// free(cmd1.command);
+	// free(cmd2.command);
+	return (cmd1);
 }
+
 void	change_permissions(char *file)	
 {
 	char	*envp[1];
@@ -90,15 +106,21 @@ void	change_permissions(char *file)
 /*if open() fails, -1 is returned and errno is set to indicate the error.
 The same happens with acces().
 When it creates outfile, it has no permissions at all*/
-void	check_files(char *argv[])
+void	check_files(char *argv[], t_args *arguments)
 {
+	int	input_fd;
+	int	output_fd;
+
+	input_fd = 0;
+	output_fd = 1;
 	if (access(argv[1], F_OK) == 0)
 	{
-		if (open("infile", O_RDONLY) == -1)
+		input_fd = open(argv[1], O_RDONLY);
+		if (input_fd == -1)
 		{
 			// ft_putstr_fd(strerror(errno), 2);
 			// write(2, "\n", 1);
-			perror("infile");
+			perror(argv[1]);
 			exit (1);
 		}
 	}
@@ -106,24 +128,39 @@ void	check_files(char *argv[])
 	{
 		// ft_putstr_fd(strerror(errno), 2);
 		// write(2, "\n", 1);
-		perror("infile");
+		perror(argv[1]);
 		exit (1);
 	}
+	// output_fd = open(argv[4], O_CREAT|O_WRONLY|O_TRUNC);
+	// if (output_fd == -1)
+	// {
+	// 	perror(argv[4]);
+	// 	exit (1);
+	// }
+	// change_permissions(argv[4]);
 	if (access(argv[4], F_OK) == 0)
 	{
 		if (access(argv[4], R_OK|W_OK) != 0)
 			change_permissions(argv[4]);
+		output_fd = open(argv[4], O_WRONLY|O_TRUNC);
 	}
 	else
 	{
-		if (open("outfile", O_CREAT|O_WRONLY|O_TRUNC) == -1)
+		output_fd = open(argv[4], O_CREAT|O_WRONLY|O_TRUNC);
+		if (output_fd == -1)
 		{
 			// ft_putstr_fd(strerror(errno), 2);
 			// write(2, "\n", 1);
-			perror("outfile");
+			perror(argv[4]);
 			exit (1);
 		}
+		change_permissions(argv[4]);
 	}
+	arguments->input_file = input_fd;
+	arguments->output_file = output_fd;
+	printf("input fd: %d output fd: %d", input_fd, output_fd);
+	close (input_fd);
+	close (output_fd);
 }
 
 void	check_commands(char *argv[])
@@ -144,25 +181,26 @@ void	check_commands(char *argv[])
 		exit (1);
 	}
 }
-void	parse_input(int argc, char *argv[])
+void	parse_input(int argc, char *argv[], char *envp[], t_args *arguments)
 {
 	if (argc != 5)
 	{
 		perror("Error: Wrong number of arguments");
 		exit (1);
 	}
-	check_files(argv);
+	check_files(argv, arguments);
+	search_path(envp, arguments);
+	arguments->cmd1 = search_command(argv[2]);
+	arguments->cmd2 = search_command(argv[3]);	
 	//check_commands(argv);
 }
 
 int	main(int argc, char *argv[], char *envp[])
 {
-	char	**path;
+	
+	t_args	arguments;
 
-	parse_input(argc, argv);
-	search_command(argv);
-	path = search_path(envp);
-	free_array(path);
+	parse_input(argc, argv, envp, &arguments);
 	// while(*envp)
     //     printf("%s\n",*envp++);
 	write(1, "Main program started\n", 21);
