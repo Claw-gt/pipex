@@ -6,7 +6,7 @@
 /*   By: clagarci <clagarci@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/24 14:02:03 by clagarci          #+#    #+#             */
-/*   Updated: 2024/09/27 18:35:44 by clagarci         ###   ########.fr       */
+/*   Updated: 2024/09/27 19:51:26 by clagarci         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,29 @@ void	free_array(char **array)
 	}
 	free(array);
 }
+char	**duplicate(char **array)
+{
+	char	**duplicate;
+	int		i;
+	int		len;
+
+	len = 0;
+	i = 0;
+	while(array[i++])
+		len++;
+	duplicate = (char **)ft_calloc(len + 1, sizeof(char *));
+	if (!duplicate)
+		exit(1);
+	i = 0;
+	while (array[i])
+	{
+		duplicate[i] = ft_strdup(array[i]);
+		if (!duplicate)
+			free_array(duplicate);
+		i++;
+	}
+	return (duplicate);
+}
 
 void	search_path(char *envp[], t_args *arguments)
 {
@@ -66,9 +89,9 @@ void	search_path(char *envp[], t_args *arguments)
 		}
 		env_aux++;		
 	}
-	ft_printf("\npath: %s\n", path_array[2]);
+	ft_printf("\npath: %s\n", path_array[0]);
 	arguments->path = path_array;
-	free_array(path_array);
+	//free_array(path_array);
 }
 
 t_cmd	search_command(char *cmd)
@@ -83,10 +106,8 @@ t_cmd	search_command(char *cmd)
 	i = 0;
 	j = 0;
 	cmd1.cmd_str = ft_split(cmd, ' '); //free luego?
-	if (!cmd1.cmd_str)
-		exit(1);
 	cmd1.command = ft_strdup(cmd1.cmd_str[0]);
-	if (!cmd1.command)
+	if (!cmd1.cmd_str || !cmd1.command)
 		exit(1);
 	while (cmd1.cmd_str[++i])
 		flags++;
@@ -94,7 +115,6 @@ t_cmd	search_command(char *cmd)
 	cmd1.flags = (char **)ft_calloc(flags + 1, sizeof(char *));
 	if (!cmd1.flags)
 		exit(1);
-	// cmd1.flags = ft_strdup("");
 	i = 0;
 	while (cmd1.cmd_str[++i])
 	{
@@ -103,20 +123,7 @@ t_cmd	search_command(char *cmd)
 			free_array(cmd1.flags);
 		j++;
 	}
-	// printf("Command flag: %s", cmd1.command);
-	// while (cmd1.cmd_str[++i])
-	// {
-	// 	cmd1.flags[i - 1] =  cmd1.cmd_str[i];
-	// }
-	// cmd2.cmd_str = ft_split(argv[3], ' ');
-	// cmd2.command = ft_strdup(cmd2.cmd_str[0]);
-
 	ft_printf("arg: %s COMMAND 1: %s FLAG1: %s\n", cmd, cmd1.command, cmd1.flags[0]);
-	//ft_printf("arg: %s COMMAND 2: %s", argv[3], cmd2.command);	
-	// free_array(cmd1.cmd_str);
-	// free_array(cmd2.cmd_str);
-	// free(cmd1.command);
-	// free(cmd2.command);
 	return (cmd1);
 }
 
@@ -194,23 +201,44 @@ void	check_files(char *argv[], t_args *arguments)
 	close (output_fd);
 }
 
-void	check_commands(char *argv[])
+char	*check_commands(t_cmd cmd, t_args *arguments)
 {
-	if (access(argv[2], F_OK|X_OK) != 0)
+	int		i;
+	char	*path_aux;
+	char	*full_command;
+
+	i = 0;
+	full_command = cmd.command;
+	if (access(cmd.command, F_OK|X_OK) == 0)
+		return (full_command);
+	else
 	{
-		ft_putstr_fd(argv[3], 2);
+		while (arguments->path[i])
+		{
+			path_aux = ft_strjoin(arguments->path[i], "/");
+			full_command = ft_strjoin(path_aux, cmd.command);
+			printf("full command: %s", full_command);
+			if (access(full_command, F_OK|X_OK) == 0)
+			{
+				return (full_command);
+			}
+			i++;
+			free(path_aux);
+			free(full_command);
+		}
+		ft_putstr_fd(cmd.command, 2);
 		ft_putstr_fd(": command not found\n", 2);
-		//perror(argv[2]);
 		exit (1);
 	}
-	if (access(argv[3], F_OK|X_OK) != 0)
-	{
-		ft_putstr_fd(argv[3], 2);
-		ft_putstr_fd(": command not found\n", 2);
-		// write(2, "\n", 1);
-		// perror(argv[3]);
-		exit (1);
-	}
+	
+	// if (access(argv[3], F_OK|X_OK) != 0)
+	// {
+	// 	ft_putstr_fd(argv[3], 2);
+	// 	ft_putstr_fd(": command not found\n", 2);
+	// 	// write(2, "\n", 1);
+	// 	// perror(argv[3]);
+	// 	exit (1);
+	// }
 }
 void	parse_input(int argc, char *argv[], char *envp[], t_args *arguments)
 {
@@ -223,7 +251,8 @@ void	parse_input(int argc, char *argv[], char *envp[], t_args *arguments)
 	search_path(envp, arguments);
 	arguments->cmd1 = search_command(argv[2]);
 	arguments->cmd2 = search_command(argv[3]);	
-	//check_commands(argv);
+	arguments->cmd1.command = check_commands(arguments->cmd1, arguments);
+	arguments->cmd2.command = check_commands(arguments->cmd2, arguments);
 }
 
 int	main(int argc, char *argv[], char *envp[])
@@ -232,6 +261,7 @@ int	main(int argc, char *argv[], char *envp[])
 	t_args	arguments;
 
 	parse_input(argc, argv, envp, &arguments);
+	free_array(arguments.path);
 	free_array(arguments.cmd1.cmd_str);
 	free(arguments.cmd1.command);
 	free_array(arguments.cmd1.flags);
