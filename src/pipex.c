@@ -6,7 +6,7 @@
 /*   By: clagarci <clagarci@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/24 14:02:03 by clagarci          #+#    #+#             */
-/*   Updated: 2024/09/26 15:59:56 by clagarci         ###   ########.fr       */
+/*   Updated: 2024/09/27 13:44:20 by clagarci         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,16 +25,18 @@ void	free_array(char **array)
 	free(array);
 }
 
-void	search_command(char *envp[])
+char	**search_path(char *envp[])
 {
 	char	*path_env;
 	char	**path_array;
+	char	**env_aux;
 
-	while(*envp)
+	env_aux = envp;
+	while(env_aux)
 	{
-		if (ft_strncmp(*envp, "PATH=", 5) == 0)
+		if (ft_strncmp(*env_aux, "PATH=", 5) == 0)
 		{
-			path_env = ft_substr(*envp, 5, ft_strlen(*envp) - 5);
+			path_env = ft_substr(*env_aux, 5, ft_strlen(*env_aux) - 5);
 			if (path_env == NULL)
 			{
 				perror("Error: Could not allocate memory");
@@ -49,10 +51,27 @@ void	search_command(char *envp[])
 			}
 			break;
 		}
-		envp++;		
+		env_aux++;		
 	}
-	ft_printf("path: %s\n", path_array[0]);
-	free_array(path_array);
+	ft_printf("\npath: %s\n", path_array[2]);
+	return (path_array);
+}
+
+void	search_command(char *argv[])
+{
+	t_cmd	cmd1;
+	t_cmd	cmd2;
+
+	cmd1.cmd_str = ft_split(argv[2], ' ');
+	cmd1.command = cmd1.cmd_str[0];
+	cmd2.cmd_str = ft_split(argv[3], ' ');
+	cmd2.command = cmd2.cmd_str[0];
+	if (!cmd1.cmd_str || !cmd2.cmd_str)
+		exit(1);
+	ft_printf("arg: %s COMMAND 1: %s\n", argv[2], cmd1.command);
+	ft_printf("arg: %s COMMAND 2: %s", argv[3], cmd2.command);	
+	free_array(cmd1.cmd_str);
+	free_array(cmd2.cmd_str);
 }
 void	change_permissions(char *file)	
 {
@@ -60,7 +79,7 @@ void	change_permissions(char *file)
 	char	*args[4];
 	
 	args[0] = "/usr/bin/chmod";
-	args[1] = "+rw";
+	args[1] = "644";
 	args[2] = file;
 	args[3] = NULL;
 	*envp = NULL;	
@@ -133,13 +152,17 @@ void	parse_input(int argc, char *argv[])
 		exit (1);
 	}
 	check_files(argv);
-	check_commands(argv);
+	//check_commands(argv);
 }
 
 int	main(int argc, char *argv[], char *envp[])
 {
+	char	**path;
+
 	parse_input(argc, argv);
-	search_command(envp);
+	search_command(argv);
+	path = search_path(envp);
+	free_array(path);
 	// while(*envp)
     //     printf("%s\n",*envp++);
 	write(1, "Main program started\n", 21);

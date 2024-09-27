@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   pipex.c                                            :+:      :+:    :+:   */
+/*   trying.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: clagarci <clagarci@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/23 17:20:20 by clagarci          #+#    #+#             */
-/*   Updated: 2024/09/24 13:45:19 by clagarci         ###   ########.fr       */
+/*   Updated: 2024/09/27 12:47:36 by clagarci         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ int	main(int argc, char *argv[], char *envp[])
 		return (1);
 	//printf("Error %s", strerror(ft_atoi(argv[1])));
     printf("Main program started\n");
-    char* args[] = { "/usr/ls", "-la", "../so_long/", NULL };
+    char* args[] = { "/usr/bin/ls", "-la", ".", NULL };
     if (access(args[0], X_OK) != 0)
         write(1, "Error", 5);
     execve(args[0], args, envp);
