@@ -6,7 +6,7 @@
 /*   By: clagarci <clagarci@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/23 17:23:15 by clagarci          #+#    #+#             */
-/*   Updated: 2024/09/27 13:02:49 by clagarci         ###   ########.fr       */
+/*   Updated: 2024/09/27 18:18:28 by clagarci         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,5 +26,14 @@ typedef struct s_cmd
 	char	*command;
 	char	**flags;
 }				t_cmd;
+
+typedef struct s_args
+{
+	int		input_file;
+	int		output_file;
+	char	**path;
+	t_cmd	cmd1;
+	t_cmd	cmd2;
+}				t_args;
 
 #endif
