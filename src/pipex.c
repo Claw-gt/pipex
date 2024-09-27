@@ -6,11 +6,24 @@
 /*   By: clagarci <clagarci@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/24 14:02:03 by clagarci          #+#    #+#             */
-/*   Updated: 2024/09/27 16:17:50 by clagarci         ###   ########.fr       */
+/*   Updated: 2024/09/27 18:35:44 by clagarci         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/pipex.h"
+
+void	free_partial(char **arr, int num)
+{
+	int	i;
+
+	i = 0;
+	while (i < num)
+	{
+		free (arr[i]);
+		i++;
+	}
+	free (arr);
+}
 
 void	free_array(char **array)
 {
@@ -61,25 +74,43 @@ void	search_path(char *envp[], t_args *arguments)
 t_cmd	search_command(char *cmd)
 {
 	t_cmd	cmd1;
+	//char	*aux;
 	int		i;
-	
+	int		j;
+	int		flags;
+
+	flags = 0;
 	i = 0;
+	j = 0;
 	cmd1.cmd_str = ft_split(cmd, ' '); //free luego?
 	if (!cmd1.cmd_str)
 		exit(1);
 	cmd1.command = ft_strdup(cmd1.cmd_str[0]);
 	if (!cmd1.command)
 		exit(1);
-	cmd1.flags = 
-	printf("Command flag: %s", cmd1.command);
+	while (cmd1.cmd_str[++i])
+		flags++;
+	printf("FLAGS: %d", flags);
+	cmd1.flags = (char **)ft_calloc(flags + 1, sizeof(char *));
+	if (!cmd1.flags)
+		exit(1);
+	// cmd1.flags = ft_strdup("");
+	i = 0;
 	while (cmd1.cmd_str[++i])
 	{
-		cmd1.flags[i - 1] =  cmd1.cmd_str[i];
+		cmd1.flags[j] = ft_strdup(cmd1.cmd_str[i]);
+		if (!cmd1.flags)
+			free_array(cmd1.flags);
+		j++;
 	}
+	// printf("Command flag: %s", cmd1.command);
+	// while (cmd1.cmd_str[++i])
+	// {
+	// 	cmd1.flags[i - 1] =  cmd1.cmd_str[i];
+	// }
 	// cmd2.cmd_str = ft_split(argv[3], ' ');
 	// cmd2.command = ft_strdup(cmd2.cmd_str[0]);
-	if (!cmd1.cmd_str) //|| !cmd2.cmd_str)
-		exit(1);
+
 	ft_printf("arg: %s COMMAND 1: %s FLAG1: %s\n", cmd, cmd1.command, cmd1.flags[0]);
 	//ft_printf("arg: %s COMMAND 2: %s", argv[3], cmd2.command);	
 	// free_array(cmd1.cmd_str);
@@ -201,6 +232,12 @@ int	main(int argc, char *argv[], char *envp[])
 	t_args	arguments;
 
 	parse_input(argc, argv, envp, &arguments);
+	free_array(arguments.cmd1.cmd_str);
+	free(arguments.cmd1.command);
+	free_array(arguments.cmd1.flags);
+	free_array(arguments.cmd2.cmd_str);
+	free(arguments.cmd2.command);
+	free_array(arguments.cmd2.flags);
 	// while(*envp)
     //     printf("%s\n",*envp++);
 	write(1, "Main program started\n", 21);
