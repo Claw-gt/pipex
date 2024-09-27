@@ -6,7 +6,7 @@
 /*   By: clagarci <clagarci@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/24 14:02:03 by clagarci          #+#    #+#             */
-/*   Updated: 2024/09/27 19:51:26 by clagarci         ###   ########.fr       */
+/*   Updated: 2024/09/27 19:55:39 by clagarci         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -219,9 +219,7 @@ char	*check_commands(t_cmd cmd, t_args *arguments)
 			full_command = ft_strjoin(path_aux, cmd.command);
 			printf("full command: %s", full_command);
 			if (access(full_command, F_OK|X_OK) == 0)
-			{
 				return (full_command);
-			}
 			i++;
 			free(path_aux);
 			free(full_command);
@@ -230,15 +228,6 @@ char	*check_commands(t_cmd cmd, t_args *arguments)
 		ft_putstr_fd(": command not found\n", 2);
 		exit (1);
 	}
-	
-	// if (access(argv[3], F_OK|X_OK) != 0)
-	// {
-	// 	ft_putstr_fd(argv[3], 2);
-	// 	ft_putstr_fd(": command not found\n", 2);
-	// 	// write(2, "\n", 1);
-	// 	// perror(argv[3]);
-	// 	exit (1);
-	// }
 }
 void	parse_input(int argc, char *argv[], char *envp[], t_args *arguments)
 {
