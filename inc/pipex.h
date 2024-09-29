@@ -6,7 +6,7 @@
 /*   By: clagarci <clagarci@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/23 17:23:15 by clagarci          #+#    #+#             */
-/*   Updated: 2024/09/27 18:18:28 by clagarci         ###   ########.fr       */
+/*   Updated: 2024/09/29 20:00:33 by clagarci         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,4 +36,7 @@ typedef struct s_args
 	t_cmd	cmd2;
 }				t_args;
 
+void    print_error(char *str);
+
+void    execute_cmd(t_args args, char **envp);
 #endif
