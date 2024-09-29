@@ -6,7 +6,7 @@
 /*   By: clagarci <clagarci@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/24 14:02:03 by clagarci          #+#    #+#             */
-/*   Updated: 2024/09/29 17:35:02 by clagarci         ###   ########.fr       */
+/*   Updated: 2024/09/29 20:02:29 by clagarci         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,7 @@ void	free_array(char **array)
 	}
 	free(array);
 }
+
 char	**duplicate(char **array)
 {
 	char	**duplicate;
@@ -159,43 +160,23 @@ void	check_files(char *argv[], t_args *arguments)
 	{
 		input_fd = open(argv[1], O_RDONLY);
 		if (input_fd == -1)
-		{
-			// ft_putstr_fd(strerror(errno), 2);
-			// write(2, "\n", 1);
-			perror(argv[1]);
-			exit (1);
-		}
+			print_error(argv[1]);
 	}
 	else
-	{
-		// ft_putstr_fd(strerror(errno), 2);
-		// write(2, "\n", 1);
-		perror(argv[1]);
-		exit (1);
-	}
-	// output_fd = open(argv[4], O_CREAT|O_WRONLY|O_TRUNC);
-	// if (output_fd == -1)
-	// {
-	// 	perror(argv[4]);
-	// 	exit (1);
-	// }
-	// change_permissions(argv[4]);
+		print_error(argv[1]);
 	if (access(argv[4], F_OK) == 0)
 	{
 		if (access(argv[4], R_OK|W_OK) != 0)
 			change_permissions(argv[4]);
 		output_fd = open(argv[4], O_WRONLY|O_TRUNC);
+		if (output_fd == -1)
+			print_error(argv[4]);
 	}
 	else
 	{
 		output_fd = open(argv[4], O_CREAT|O_WRONLY|O_TRUNC);
 		if (output_fd == -1)
-		{
-			// ft_putstr_fd(strerror(errno), 2);
-			// write(2, "\n", 1);
-			perror(argv[4]);
-			exit (1);
-		}
+			print_error(argv[4]);
 		change_permissions(argv[4]);
 	}
 	arguments->input_file = input_fd;
@@ -213,13 +194,13 @@ char	*check_commands(t_cmd cmd, t_args *arguments)
 	char	*aux;
 
 	i = 0;
-	full_command = cmd.command;
 	if (access(cmd.command, F_OK|X_OK) == 0)
 		return (cmd.command);
 	else
 	{
 		while (arguments->path[i])
 		{
+			full_command = cmd.command;
 			path_aux = ft_strjoin(arguments->path[i], "/");
 			if (!path_aux)
 				exit(1);
@@ -235,7 +216,6 @@ char	*check_commands(t_cmd cmd, t_args *arguments)
 			}
 			i++;
 			free(aux);
-			full_command = cmd.command;
 		}
 		ft_putstr_fd(cmd.command, 2);
 		ft_putstr_fd(": command not found\n", 2);
@@ -247,8 +227,8 @@ void	parse_input(int argc, char *argv[], char *envp[], t_args *arguments)
 {
 	if (argc != 5)
 	{
-		perror("Error: Wrong number of arguments");
-		exit (1);
+		ft_putstr_fd("Error: Wrong number of arguments\n", 2);
+		exit (EXIT_FAILURE);
 	}
 	check_files(argv, arguments);
 	search_path(envp, arguments);
@@ -264,6 +244,7 @@ int	main(int argc, char *argv[], char *envp[])
 	t_args	arguments;
 
 	parse_input(argc, argv, envp, &arguments);
+	execute_cmd(arguments, envp);
 	free_array(arguments.path);
 	free_array(arguments.cmd1.cmd_str);
 	free(arguments.cmd1.command);
