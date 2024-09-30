@@ -6,7 +6,7 @@
 /*   By: clagarci <clagarci@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/23 17:23:15 by clagarci          #+#    #+#             */
-/*   Updated: 2024/09/29 20:00:33 by clagarci         ###   ########.fr       */
+/*   Updated: 2024/09/30 18:48:23 by clagarci         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,8 @@
 # include <errno.h>
 # include <fcntl.h>
 # include "../libft/libft.h"
+# define READ_END 0
+# define WRITE_END 1
 
 typedef struct s_cmd
 {
@@ -36,7 +38,11 @@ typedef struct s_args
 	t_cmd	cmd2;
 }				t_args;
 
-void    print_error(char *str);
+void    print_errno(char *str);
 
-void    execute_cmd(t_args args, char **envp);
+void    custom_error(char *str);
+
+void    execute_cmd(char **envp, t_cmd cmd);
+
+void	create_pipe(t_args arguments, char **envp);
 #endif

@@ -6,21 +6,89 @@
 /*   By: clagarci <clagarci@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/29 19:48:46 by clagarci          #+#    #+#             */
-/*   Updated: 2024/09/29 20:02:52 by clagarci         ###   ########.fr       */
+/*   Updated: 2024/09/30 19:03:18 by clagarci         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/pipex.h"
 
-void    execute_cmd(t_args args, char **envp)
+int	command_len(char **cmd)
+{
+	int	i;
+
+	i = 0;
+	while (cmd[i])
+		i++;
+	return (i);
+}
+
+void	create_pipe(t_args arguments, char **envp)
+{
+	int	pipe_fd[2];
+	int	pid;
+
+	pipe(pipe_fd);
+	pid = fork();
+	if (pid == -1)
+		print_errno("Fork failed");
+	if (pid == 0)
+	{
+		close(pipe_fd[READ_END]);
+		if (dup2(arguments.input_file, STDIN_FILENO) == -1)
+			print_errno("dup2 (infile) failed");
+		if (dup2(pipe_fd[WRITE_END], STDOUT_FILENO) == -1)
+			print_errno("Dup2 (write end) failed");
+		close(arguments.input_file);
+		close(pipe_fd[WRITE_END]);
+		execute_cmd(envp, arguments.cmd1);
+	}
+	else
+	{
+		close(pipe_fd[WRITE_END]);
+		pid = fork();
+		if (pid == -1)
+			print_errno("Fork failed");
+		if (pid == 0)
+		{
+			if (dup2(pipe_fd[READ_END], STDIN_FILENO) == -1)
+				print_errno("Dup2 (read end) failed");
+			if (dup2(arguments.output_file, STDOUT_FILENO) == -1)
+				print_errno("Dup2 (outfile) failed");
+			close(pipe_fd[READ_END]);
+			close(arguments.output_file);
+			execute_cmd(envp, arguments.cmd2);
+		}
+		else
+		{
+			close(pipe_fd[READ_END]);
+			wait(NULL);
+		}
+	}
+}
+void    execute_cmd(char **envp, t_cmd cmd)
 {
     char	**argv;
-	(void)	envp;
-
-	argv = ft_calloc(3, sizeof(char *));
-	argv[0] = args.cmd1.command;
-	argv[1] = args.cmd1.flags[0];
-	argv[2] = NULL;
+	int		i;
+	(void)envp;
+	i = 1;
+	argv = ft_calloc(command_len(cmd.cmd_str) + 1, sizeof(char *));
+	if (!argv)
+	{
+		ft_putstr_fd("Error: Could not allocate memory\n", 2);
+		exit (1);
+	}
+	argv[0] = cmd.command;
+	while (cmd.cmd_str[i])
+	{
+		argv[i] = cmd.cmd_str[i];
+		i++;
+	}
+	//argv[i] = NULL;
+	//execve(argv[0], argv, envp);
+	// argv = ft_calloc(3, sizeof(char *));
+	// argv[0] = args.cmd1.command;
+	// argv[1] = args.cmd1.flags[0];
+	// argv[2] = NULL;
     execve(argv[0], argv, envp);
 	perror("Could not execve");
     write(1, "hello", 5);

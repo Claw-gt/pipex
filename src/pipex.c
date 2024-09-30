@@ -6,7 +6,7 @@
 /*   By: clagarci <clagarci@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/24 14:02:03 by clagarci          #+#    #+#             */
-/*   Updated: 2024/09/29 20:02:29 by clagarci         ###   ########.fr       */
+/*   Updated: 2024/09/30 18:59:36 by clagarci         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,28 +75,22 @@ void	search_path(char *envp[], t_args *arguments)
 		{
 			path_env = ft_substr(*env_aux, 5, ft_strlen(*env_aux) - 5);
 			if (path_env == NULL)
-			{
-				perror("Error: Could not allocate memory");
-				exit (1);
-			}
+				custom_error("Error: Could not allocate memory");
 			path_array = ft_split(path_env, ':');
 			free(path_env);
 			if (path_array == NULL)
-			{
-				perror("Error: Could not allocate memory");
-				exit (1);
-			}
+				custom_error("Error: Could not allocate memory");
 			break;
 		}
 		env_aux++;		
 	}
-	int i = 0;
-	while (path_array[i])
-	{
-		write(1, path_array[i], ft_strlen(path_array[i]));
-		write(1, "\n", 1);
-		i++;
-	}
+	// int i = 0;
+	// while (path_array[i])
+	// {
+	// 	write(1, path_array[i], ft_strlen(path_array[i]));
+	// 	write(1, "\n", 1);
+	// 	i++;
+	// }
 	arguments->path = path_array;
 }
 
@@ -160,30 +154,30 @@ void	check_files(char *argv[], t_args *arguments)
 	{
 		input_fd = open(argv[1], O_RDONLY);
 		if (input_fd == -1)
-			print_error(argv[1]);
+			print_errno(argv[1]);
 	}
 	else
-		print_error(argv[1]);
+		print_errno(argv[1]);
 	if (access(argv[4], F_OK) == 0)
 	{
 		if (access(argv[4], R_OK|W_OK) != 0)
 			change_permissions(argv[4]);
 		output_fd = open(argv[4], O_WRONLY|O_TRUNC);
 		if (output_fd == -1)
-			print_error(argv[4]);
+			print_errno(argv[4]);
 	}
 	else
 	{
 		output_fd = open(argv[4], O_CREAT|O_WRONLY|O_TRUNC);
 		if (output_fd == -1)
-			print_error(argv[4]);
+			print_errno(argv[4]);
 		change_permissions(argv[4]);
 	}
 	arguments->input_file = input_fd;
 	arguments->output_file = output_fd;
-	printf("input fd: %d output fd: %d", input_fd, output_fd);
-	close (input_fd);
-	close (output_fd);
+	//printf("input fd: %d output fd: %d", input_fd, output_fd);
+	// close (input_fd);
+	// close (output_fd);
 }
 
 char	*check_commands(t_cmd cmd, t_args *arguments)
@@ -218,8 +212,10 @@ char	*check_commands(t_cmd cmd, t_args *arguments)
 			free(aux);
 		}
 		ft_putstr_fd(cmd.command, 2);
-		ft_putstr_fd(": command not found\n", 2);
-		exit (1);
+		custom_error(": command not found\n");
+		return (NULL);
+		// ft_putstr_fd(": command not found\n", 2);
+		// exit (1);
 	}
 }
 
@@ -244,7 +240,8 @@ int	main(int argc, char *argv[], char *envp[])
 	t_args	arguments;
 
 	parse_input(argc, argv, envp, &arguments);
-	execute_cmd(arguments, envp);
+	create_pipe(arguments, envp);
+	//execute_cmd(arguments, envp);
 	free_array(arguments.path);
 	free_array(arguments.cmd1.cmd_str);
 	free(arguments.cmd1.command);
