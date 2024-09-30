@@ -6,7 +6,7 @@
 /*   By: clagarci <clagarci@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/29 19:48:46 by clagarci          #+#    #+#             */
-/*   Updated: 2024/09/30 19:03:18 by clagarci         ###   ########.fr       */
+/*   Updated: 2024/09/30 19:10:05 by clagarci         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,14 +69,11 @@ void    execute_cmd(char **envp, t_cmd cmd)
 {
     char	**argv;
 	int		i;
-	(void)envp;
+
 	i = 1;
 	argv = ft_calloc(command_len(cmd.cmd_str) + 1, sizeof(char *));
 	if (!argv)
-	{
-		ft_putstr_fd("Error: Could not allocate memory\n", 2);
-		exit (1);
-	}
+		custom_error("Error: Could not allocate memory\n");
 	argv[0] = cmd.command;
 	while (cmd.cmd_str[i])
 	{
