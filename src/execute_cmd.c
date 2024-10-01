@@ -6,7 +6,7 @@
 /*   By: clagarci <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/29 19:48:46 by clagarci          #+#    #+#             */
-/*   Updated: 2024/10/01 14:18:36 by clagarci         ###   ########.fr       */
+/*   Updated: 2024/10/01 14:23:39 by clagarci         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,14 +25,14 @@ int	command_len(char **cmd)
 void	create_pipe(t_args arguments, char **envp)
 {
 	int		pipe_fd[2];
-	pid_t	pid;
+	pid_t	pid[2];
 
 	if (pipe(pipe_fd) == -1)
 		print_errno("Pipe failed");
-	pid = fork();
-	if (pid == -1)
+	pid[0] = fork();
+	if (pid[0] == -1)
 		print_errno("Fork failed");
-	else if (pid == 0)
+	else if (pid[0] == 0)
 	{
 		close(pipe_fd[READ_END]);
 		if (dup2(arguments.input_file, STDIN_FILENO) == -1)
@@ -46,10 +46,10 @@ void	create_pipe(t_args arguments, char **envp)
 	else
 	{
 		close(pipe_fd[WRITE_END]);
-		pid = fork();
-		if (pid == -1)
+		pid[1] = fork();
+		if (pid[1] == -1)
 			print_errno("Fork failed");
-		else if (pid == 0)
+		else if (pid[1] == 0)
 		{
 			if (dup2(pipe_fd[READ_END], STDIN_FILENO) == -1)
 				print_errno("Dup2 (read end) failed");
@@ -62,7 +62,10 @@ void	create_pipe(t_args arguments, char **envp)
 		else
 		{
 			close(pipe_fd[READ_END]);
-			wait(NULL);
+			waitpid(pid[0], NULL, 0);
+			waitpid(pid[1], NULL, 0);
+			//waitpid
+			//wait(NULL);
 		}
 	}
 }
