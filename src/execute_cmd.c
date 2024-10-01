@@ -6,7 +6,7 @@
 /*   By: clagarci <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/29 19:48:46 by clagarci          #+#    #+#             */
-/*   Updated: 2024/10/01 13:14:59 by clagarci         ###   ########.fr       */
+/*   Updated: 2024/10/01 14:18:36 by clagarci         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,8 +24,8 @@ int	command_len(char **cmd)
 
 void	create_pipe(t_args arguments, char **envp)
 {
-	int	pipe_fd[2];
-	int	pid;
+	int		pipe_fd[2];
+	pid_t	pid;
 
 	if (pipe(pipe_fd) == -1)
 		print_errno("Pipe failed");

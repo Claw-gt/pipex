@@ -6,7 +6,7 @@
 /*   By: clagarci <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/24 14:02:03 by clagarci          #+#    #+#             */
-/*   Updated: 2024/10/01 13:14:10 by clagarci         ###   ########.fr       */
+/*   Updated: 2024/10/01 14:18:57 by clagarci         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -137,7 +137,7 @@ void	change_permissions(char *file)
 {
 	char	*envp[1];
 	char	*args[4];
-	int		pid;
+	pid_t	pid;
 
 	pid = fork();
 	if (pid == -1)
