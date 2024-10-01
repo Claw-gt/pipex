@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipex.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: clagarci <clagarci@student.42.fr>          +#+  +:+       +#+        */
+/*   By: clagarci <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/24 14:02:03 by clagarci          #+#    #+#             */
-/*   Updated: 2024/09/30 18:59:36 by clagarci         ###   ########.fr       */
+/*   Updated: 2024/10/01 12:53:18 by clagarci         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,7 +122,14 @@ t_cmd	search_command(char *cmd)
 			free_partial(cmd1.flags, j);
 		j++;
 	}
-	ft_printf("arg: %s COMMAND 1: %s FLAG1: %s\n", cmd, cmd1.command, cmd1.flags[0]);
+	ft_printf("arg: %s COMMAND 1: %s FLAGS: ", cmd, cmd1.command);
+	i = 0;
+	while (cmd1.flags[i])
+	{
+		write(1, cmd1.flags[i], ft_strlen(cmd1.flags[i]));
+		i++;
+	}
+	write(1, "\n", 1);
 	return (cmd1);
 }
 
@@ -130,18 +137,27 @@ void	change_permissions(char *file)
 {
 	char	*envp[1];
 	char	*args[4];
-	
-	args[0] = "/usr/bin/chmod";
-	args[1] = "644";
-	args[2] = file;
-	args[3] = NULL;
-	*envp = NULL;	
-	execve(args[0], args, envp);
-    perror("Could not execve");
+	int		pid;
+
+	pid = fork();
+	if (pid == -1)
+		print_errno("Fork failed");
+	if (pid == 0)
+	{
+		args[0] = "/usr/bin/chmod";
+		args[1] = "644";
+		args[2] = file;
+		args[3] = NULL;
+		*envp = NULL;	
+		execve(args[0], args, envp);
+		perror("Could not execve");
+	}
+	else
+		wait(NULL);
 }
 
 /*if open() fails, -1 is returned and errno is set to indicate the error.
-The same happens with acces().
+The same happens with access().
 When it creates outfile, it has no permissions at all*/
 void	check_files(char *argv[], t_args *arguments)
 {
@@ -169,18 +185,19 @@ void	check_files(char *argv[], t_args *arguments)
 	else
 	{
 		output_fd = open(argv[4], O_CREAT|O_WRONLY|O_TRUNC);
+		write(1, "File created\n", 13);
 		if (output_fd == -1)
 			print_errno(argv[4]);
 		change_permissions(argv[4]);
 	}
 	arguments->input_file = input_fd;
 	arguments->output_file = output_fd;
-	//printf("input fd: %d output fd: %d", input_fd, output_fd);
+	// printf("input fd: %d output fd: %d", input_fd, output_fd);
 	// close (input_fd);
 	// close (output_fd);
 }
 
-char	*check_commands(t_cmd cmd, t_args *arguments)
+char	*check_command(t_cmd cmd, t_args *arguments)
 {
 	int		i;
 	char	*path_aux;
@@ -197,10 +214,10 @@ char	*check_commands(t_cmd cmd, t_args *arguments)
 			full_command = cmd.command;
 			path_aux = ft_strjoin(arguments->path[i], "/");
 			if (!path_aux)
-				exit(1);
+				custom_error("Error: Could not allocate memory");
 			aux = ft_strjoin(path_aux, full_command);
 			if (!aux)
-				exit(1);
+				custom_error("Error: Could not allocate memory");
 			free (path_aux);
 			full_command = aux;
 			if (access(full_command, F_OK|X_OK) == 0)
@@ -222,16 +239,13 @@ char	*check_commands(t_cmd cmd, t_args *arguments)
 void	parse_input(int argc, char *argv[], char *envp[], t_args *arguments)
 {
 	if (argc != 5)
-	{
-		ft_putstr_fd("Error: Wrong number of arguments\n", 2);
-		exit (EXIT_FAILURE);
-	}
+		custom_error("Error: Wrong number of arguments\n");
 	check_files(argv, arguments);
 	search_path(envp, arguments);
 	arguments->cmd1 = search_command(argv[2]);
 	arguments->cmd2 = search_command(argv[3]);	
-	arguments->cmd1.command = check_commands(arguments->cmd1, arguments);
-	arguments->cmd2.command = check_commands(arguments->cmd2, arguments);
+	arguments->cmd1.command = check_command(arguments->cmd1, arguments);
+	arguments->cmd2.command = check_command(arguments->cmd2, arguments);
 }
 
 int	main(int argc, char *argv[], char *envp[])
@@ -241,7 +255,6 @@ int	main(int argc, char *argv[], char *envp[])
 
 	parse_input(argc, argv, envp, &arguments);
 	create_pipe(arguments, envp);
-	//execute_cmd(arguments, envp);
 	free_array(arguments.path);
 	free_array(arguments.cmd1.cmd_str);
 	free(arguments.cmd1.command);
@@ -249,6 +262,8 @@ int	main(int argc, char *argv[], char *envp[])
 	free_array(arguments.cmd2.cmd_str);
 	free(arguments.cmd2.command);
 	free_array(arguments.cmd2.flags);
+	close(arguments.input_file);
+	close(arguments.output_file);
 	write(1, "Main program started\n", 21);
 	return (0);
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execute_cmd.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: clagarci <clagarci@student.42.fr>          +#+  +:+       +#+        */
+/*   By: clagarci <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/29 19:48:46 by clagarci          #+#    #+#             */
-/*   Updated: 2024/09/30 19:10:05 by clagarci         ###   ########.fr       */
+/*   Updated: 2024/10/01 12:45:41 by clagarci         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,11 +27,12 @@ void	create_pipe(t_args arguments, char **envp)
 	int	pipe_fd[2];
 	int	pid;
 
-	pipe(pipe_fd);
+	if (pipe(pipe_fd) == -1)
+		print_errno("Pipe failed");
 	pid = fork();
 	if (pid == -1)
 		print_errno("Fork failed");
-	if (pid == 0)
+	else if (pid == 0)
 	{
 		close(pipe_fd[READ_END]);
 		if (dup2(arguments.input_file, STDIN_FILENO) == -1)
@@ -48,7 +49,7 @@ void	create_pipe(t_args arguments, char **envp)
 		pid = fork();
 		if (pid == -1)
 			print_errno("Fork failed");
-		if (pid == 0)
+		else if (pid == 0)
 		{
 			if (dup2(pipe_fd[READ_END], STDIN_FILENO) == -1)
 				print_errno("Dup2 (read end) failed");
