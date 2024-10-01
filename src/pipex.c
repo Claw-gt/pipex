@@ -6,7 +6,7 @@
 /*   By: clagarci <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/24 14:02:03 by clagarci          #+#    #+#             */
-/*   Updated: 2024/10/01 12:53:18 by clagarci         ###   ########.fr       */
+/*   Updated: 2024/10/01 13:14:10 by clagarci         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -262,8 +262,6 @@ int	main(int argc, char *argv[], char *envp[])
 	free_array(arguments.cmd2.cmd_str);
 	free(arguments.cmd2.command);
 	free_array(arguments.cmd2.flags);
-	close(arguments.input_file);
-	close(arguments.output_file);
 	write(1, "Main program started\n", 21);
 	return (0);
 }

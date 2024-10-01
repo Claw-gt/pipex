@@ -6,7 +6,7 @@
 /*   By: clagarci <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/29 19:48:46 by clagarci          #+#    #+#             */
-/*   Updated: 2024/10/01 12:45:41 by clagarci         ###   ########.fr       */
+/*   Updated: 2024/10/01 13:14:59 by clagarci         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,7 @@ void	create_pipe(t_args arguments, char **envp)
 				print_errno("Dup2 (read end) failed");
 			if (dup2(arguments.output_file, STDOUT_FILENO) == -1)
 				print_errno("Dup2 (outfile) failed");
-			close(pipe_fd[READ_END]);
+			close(pipe_fd[READ_END]); //ya tenemos dos fds que apuntan a lo mismo. Cerramos uno
 			close(arguments.output_file);
 			execute_cmd(envp, arguments.cmd2);
 		}
@@ -74,14 +74,14 @@ void    execute_cmd(char **envp, t_cmd cmd)
 	i = 1;
 	argv = ft_calloc(command_len(cmd.cmd_str) + 1, sizeof(char *));
 	if (!argv)
-		custom_error("Error: Could not allocate memory\n");
+		custom_error("Error: Could not allocate memory");
 	argv[0] = cmd.command;
 	while (cmd.cmd_str[i])
 	{
 		argv[i] = cmd.cmd_str[i];
 		i++;
 	}
-	//argv[i] = NULL;
+	argv[i] = NULL;
 	//execve(argv[0], argv, envp);
 	// argv = ft_calloc(3, sizeof(char *));
 	// argv[0] = args.cmd1.command;
