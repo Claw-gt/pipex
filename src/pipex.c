@@ -6,7 +6,7 @@
 /*   By: clagarci <clagarci@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/24 14:02:03 by clagarci          #+#    #+#             */
-/*   Updated: 2024/10/02 13:48:28 by clagarci         ###   ########.fr       */
+/*   Updated: 2024/10/02 14:17:51 by clagarci         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,12 +36,30 @@ char	**duplicate(char **array)
 	return (duplicate);
 }
 
+char	**add_slash(char	**path)
+{
+	char	**full_path;
+	int		i;
+	char	*aux;
+
+	i = 0;
+	full_path = duplicate(path);
+	while (path[i])
+	{
+		aux = ft_strjoin(path[i], "/");
+		free(full_path[i]);
+		full_path[i] = aux;
+		i++;
+	}
+	return (full_path);
+}
 
 void	search_path(char *envp[], t_args *arguments)
 {
 	char	*path_env;
 	char	**path_array;
 	char	**env_aux;
+	char	**full_path;
 
 	env_aux = envp;
 	while(env_aux)
@@ -49,24 +67,19 @@ void	search_path(char *envp[], t_args *arguments)
 		if (ft_strncmp(*env_aux, "PATH=", 5) == 0)
 		{
 			path_env = ft_substr(*env_aux, 5, ft_strlen(*env_aux) - 5);
-			if (path_env == NULL)
+			if (!path_env)
 				custom_error("Error: Could not allocate memory");
 			path_array = ft_split(path_env, ':');
-			free(path_env);
-			if (path_array == NULL)
+			if (!path_array)
 				custom_error("Error: Could not allocate memory");
+			full_path = add_slash(path_array);			
+			free(path_env);
+			free_array(path_array);
 			break;
 		}
 		env_aux++;
 	}
-	// int i = 0;
-	// while (path_array[i])
-	// {
-	// 	write(1, path_array[i], ft_strlen(path_array[i]));
-	// 	write(1, "\n", 1);
-	// 	i++;
-	// }
-	arguments->path = path_array;
+	arguments->path = full_path;
 }
 
 t_cmd	assign_command(char *arg)
@@ -152,29 +165,21 @@ void	check_files(char *argv[], t_args *arguments)
 	}
 	arguments->input_file = input_fd;
 	arguments->output_file = output_fd;
-	// printf("input fd: %d output fd: %d", input_fd, output_fd);
-	// close (input_fd);
-	// close (output_fd);
 }
 
 char	*get_fullcommand(char *short_cmd, char **path)
 {
 	int		i;
-	char	*path_aux;
 	char	*full_command;
 	char	*aux;
 
-	i = 0;
-	while (path[i])
+	i = -1;
+	while (path[++i])
 	{
 		full_command = short_cmd;
-		path_aux = ft_strjoin(path[i], "/");
-		if (!path_aux)
-			custom_error("Error: Could not allocate memory");
-		aux = ft_strjoin(path_aux, full_command);
+		aux = ft_strjoin(path[i], full_command);
 		if (!aux)
 			custom_error("Error: Could not allocate memory");
-		free (path_aux);
 		full_command = aux;
 		if (access(full_command, F_OK|X_OK) == 0)
 		{
@@ -182,7 +187,6 @@ char	*get_fullcommand(char *short_cmd, char **path)
 			return (full_command);
 		}
 		free(aux);
-		i++;
 	}
 	ft_putstr_fd(short_cmd, 2);
 	custom_error(": command not found\n");
@@ -191,40 +195,10 @@ char	*get_fullcommand(char *short_cmd, char **path)
 
 char	*check_command(t_cmd cmd, char **path)
 {
-	// int		i;
-	// char	*path_aux;
-	// char	*full_command;
-	// char	*aux;
-
-	// i = 0;
 	if (access(cmd.command, F_OK|X_OK) == 0)
 		return (cmd.command);
 	else
-	{
 		return (get_fullcommand(cmd.command, path));
-		// while (path[i])
-		// {
-		// 	full_command = cmd.command;
-		// 	path_aux = ft_strjoin(path[i], "/");
-		// 	if (!path_aux)
-		// 		custom_error("Error: Could not allocate memory");
-		// 	aux = ft_strjoin(path_aux, full_command);
-		// 	if (!aux)
-		// 		custom_error("Error: Could not allocate memory");
-		// 	free (path_aux);
-		// 	full_command = aux;
-		// 	if (access(full_command, F_OK|X_OK) == 0)
-		// 	{
-		// 		free(cmd.command);
-		// 		return (full_command);
-		// 	}
-		// 	i++;
-		// 	free(aux);
-		// }
-		// ft_putstr_fd(cmd.command, 2);
-		// custom_error(": command not found\n");
-		// return (NULL);
-	}
 }
 
 void	parse_input(int argc, char *argv[], char *envp[], t_args *arguments)
