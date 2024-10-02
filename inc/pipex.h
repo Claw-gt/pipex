@@ -6,7 +6,7 @@
 /*   By: clagarci <clagarci@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/23 17:23:15 by clagarci          #+#    #+#             */
-/*   Updated: 2024/09/30 18:48:23 by clagarci         ###   ########.fr       */
+/*   Updated: 2024/10/02 12:18:47 by clagarci         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,4 +45,10 @@ void    custom_error(char *str);
 void    execute_cmd(char **envp, t_cmd cmd);
 
 void	create_pipe(t_args arguments, char **envp);
+
+void	free_elements(t_args *arguments);
+
+void	free_array(char **array);
+
+void	free_partial(char **arr, int num);
 #endif

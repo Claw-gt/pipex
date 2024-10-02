@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execute_cmd.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: clagarci <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: clagarci <clagarci@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/29 19:48:46 by clagarci          #+#    #+#             */
-/*   Updated: 2024/10/01 14:23:39 by clagarci         ###   ########.fr       */
+/*   Updated: 2024/10/02 12:43:01 by clagarci         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ void	create_pipe(t_args arguments, char **envp)
 		if (dup2(arguments.input_file, STDIN_FILENO) == -1)
 			print_errno("dup2 (infile) failed");
 		if (dup2(pipe_fd[WRITE_END], STDOUT_FILENO) == -1)
-			print_errno("Dup2 (write end) failed");
+			print_errno("dup2 (write end) failed");
 		close(arguments.input_file);
 		close(pipe_fd[WRITE_END]);
 		execute_cmd(envp, arguments.cmd1);
@@ -52,9 +52,9 @@ void	create_pipe(t_args arguments, char **envp)
 		else if (pid[1] == 0)
 		{
 			if (dup2(pipe_fd[READ_END], STDIN_FILENO) == -1)
-				print_errno("Dup2 (read end) failed");
+				print_errno("dup2 (read end) failed");
 			if (dup2(arguments.output_file, STDOUT_FILENO) == -1)
-				print_errno("Dup2 (outfile) failed");
+				print_errno("dup2 (outfile) failed");
 			close(pipe_fd[READ_END]); //ya tenemos dos fds que apuntan a lo mismo. Cerramos uno
 			close(arguments.output_file);
 			execute_cmd(envp, arguments.cmd2);
@@ -85,11 +85,6 @@ void    execute_cmd(char **envp, t_cmd cmd)
 		i++;
 	}
 	argv[i] = NULL;
-	//execve(argv[0], argv, envp);
-	// argv = ft_calloc(3, sizeof(char *));
-	// argv[0] = args.cmd1.command;
-	// argv[1] = args.cmd1.flags[0];
-	// argv[2] = NULL;
     execve(argv[0], argv, envp);
 	perror("Could not execve");
     write(1, "hello", 5);
