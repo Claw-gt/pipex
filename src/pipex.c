@@ -6,7 +6,7 @@
 /*   By: clagarci <clagarci@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/24 14:02:03 by clagarci          #+#    #+#             */
-/*   Updated: 2024/10/03 15:16:36 by clagarci         ###   ########.fr       */
+/*   Updated: 2024/10/03 15:28:21 by clagarci         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,13 +87,15 @@ t_cmd	assign_command(char *arg)
 	t_cmd	cmd;
 	int		i;
 
-	cmd = (t_cmd){0, 0, 0};
-	if (arg[0] == '\0')
-		return (cmd);
 	i = 0;
 	cmd.cmd_str = ft_split(arg, ' ');
 	if (!cmd.cmd_str)
 		custom_error("Error: Could not allocate memory");
+	if (cmd.cmd_str[0] == NULL)
+	{
+		free_array(cmd.cmd_str);
+		return ((t_cmd){0, 0, 0});
+	}
 	cmd.command = ft_strdup(cmd.cmd_str[0]);
 	if (!cmd.command)
 		custom_error("Error: Could not allocate memory");
