@@ -6,7 +6,7 @@
 /*   By: clagarci <clagarci@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/29 19:48:46 by clagarci          #+#    #+#             */
-/*   Updated: 2024/10/03 14:36:17 by clagarci         ###   ########.fr       */
+/*   Updated: 2024/10/03 15:18:06 by clagarci         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,8 @@ void	execute_cmd(char **envp, t_cmd cmd)
 	int		i;
 
 	i = 1;
+	if (cmd.command == NULL)
+		exit (EXIT_FAILURE);
 	argv = ft_calloc(command_len(cmd.cmd_str) + 1, sizeof(char *));
 	if (!argv)
 		custom_error("Error: Could not allocate memory");

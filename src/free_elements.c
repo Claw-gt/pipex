@@ -6,7 +6,7 @@
 /*   By: clagarci <clagarci@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/02 12:16:10 by clagarci          #+#    #+#             */
-/*   Updated: 2024/10/02 12:35:16 by clagarci         ###   ########.fr       */
+/*   Updated: 2024/10/03 15:20:45 by clagarci         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,10 +41,16 @@ void	free_array(char **array)
 void	free_elements(t_args *arguments)
 {
 	free_array(arguments->path);
-	free_array(arguments->cmd1.cmd_str);
-	free(arguments->cmd1.command);
-	free_array(arguments->cmd1.flags);
-	free_array(arguments->cmd2.cmd_str);
-	free(arguments->cmd2.command);
-	free_array(arguments->cmd2.flags);
+	if (arguments->cmd1.cmd_str != NULL)
+	{
+		free_array(arguments->cmd1.cmd_str);
+		free(arguments->cmd1.command);
+		free_array(arguments->cmd1.flags);
+	}
+	if (arguments->cmd2.cmd_str != NULL)
+	{
+		free_array(arguments->cmd2.cmd_str);
+		free(arguments->cmd2.command);
+		free_array(arguments->cmd2.flags);
+	}
 }
