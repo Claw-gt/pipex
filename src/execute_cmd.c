@@ -6,7 +6,7 @@
 /*   By: clagarci <clagarci@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/29 19:48:46 by clagarci          #+#    #+#             */
-/*   Updated: 2024/10/02 12:43:01 by clagarci         ###   ########.fr       */
+/*   Updated: 2024/10/03 13:10:49 by clagarci         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,10 +26,13 @@ void	create_pipe(t_args arguments, char **envp)
 {
 	int		pipe_fd[2];
 	pid_t	pid[2];
+	pid_t	wait_pid[2];
+	int		status[2];
 
 	if (pipe(pipe_fd) == -1)
 		print_errno("Pipe failed");
 	pid[0] = fork();
+	printf("pid[0]: %d\n", pid[0]);
 	if (pid[0] == -1)
 		print_errno("Fork failed");
 	else if (pid[0] == 0)
@@ -55,23 +58,28 @@ void	create_pipe(t_args arguments, char **envp)
 				print_errno("dup2 (read end) failed");
 			if (dup2(arguments.output_file, STDOUT_FILENO) == -1)
 				print_errno("dup2 (outfile) failed");
-			close(pipe_fd[READ_END]); //ya tenemos dos fds que apuntan a lo mismo. Cerramos uno
+			close(pipe_fd[READ_END]); // ya tenemos dos fds que apuntan a lo mismo. Cerramos uno
 			close(arguments.output_file);
 			execute_cmd(envp, arguments.cmd2);
 		}
 		else
 		{
 			close(pipe_fd[READ_END]);
-			waitpid(pid[0], NULL, 0);
-			waitpid(pid[1], NULL, 0);
-			//waitpid
-			//wait(NULL);
+			wait_pid[0] = waitpid(pid[0], &status[0], 0);
+			printf("WAit pid %d Status: %d", wait_pid[0], WEXITSTATUS(status[0]));
+			wait_pid[1] = waitpid(pid[1], &status[1], 0);
+			printf("Status: %d", WEXITSTATUS(status[1]));
+			if (wait_pid[0] == -1 || wait_pid[1] == -1)
+				print_errno("Wait failed");
+			else if (WEXITSTATUS(status[0]) != EXIT_SUCCESS || WEXITSTATUS(status[1]) != EXIT_SUCCESS)
+				custom_error("Error: Child process failed");
 		}
 	}
 }
-void    execute_cmd(char **envp, t_cmd cmd)
+
+void	execute_cmd(char **envp, t_cmd cmd)
 {
-    char	**argv;
+	char	**argv;
 	int		i;
 
 	i = 1;
@@ -85,7 +93,6 @@ void    execute_cmd(char **envp, t_cmd cmd)
 		i++;
 	}
 	argv[i] = NULL;
-    execve(argv[0], argv, envp);
-	perror("Could not execve");
-    write(1, "hello", 5);
+	execve(argv[0], argv, envp);
+	print_errno("Execve failed");
 }

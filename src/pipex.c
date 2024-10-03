@@ -6,7 +6,7 @@
 /*   By: clagarci <clagarci@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/24 14:02:03 by clagarci          #+#    #+#             */
-/*   Updated: 2024/10/02 16:41:49 by clagarci         ###   ########.fr       */
+/*   Updated: 2024/10/03 13:31:59 by clagarci         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ char	**duplicate(char **array)
 
 	len = 0;
 	i = 0;
-	while(array[i++])
+	while (array[i++])
 		len++;
 	duplicate = (char **)ft_calloc(len + 1, sizeof(char *));
 	if (!duplicate)
@@ -36,7 +36,7 @@ char	**duplicate(char **array)
 	return (duplicate);
 }
 
-char	**add_slash(char	**path)
+char	**add_slash(char **path)
 {
 	char	**full_path;
 	int		i;
@@ -62,7 +62,7 @@ void	search_path(char *envp[], t_args *arguments)
 	char	**full_path;
 
 	env_aux = envp;
-	while(env_aux)
+	while (env_aux)
 	{
 		if (ft_strncmp(*env_aux, "PATH=", 5) == 0)
 		{
@@ -72,10 +72,10 @@ void	search_path(char *envp[], t_args *arguments)
 			path_array = ft_split(path_env, ':');
 			if (!path_array)
 				custom_error("Error: Could not allocate memory");
-			full_path = add_slash(path_array);			
+			full_path = add_slash(path_array);
 			free(path_env);
 			free_array(path_array);
-			break;
+			break ;
 		}
 		env_aux++;
 	}
@@ -106,7 +106,7 @@ t_cmd	assign_command(char *arg)
 	return (cmd);
 }
 
-void	change_permissions(char *file)	
+void	change_permissions(char *file)
 {
 	char	*envp[1];
 	char	*args[4];
@@ -121,9 +121,9 @@ void	change_permissions(char *file)
 		args[1] = "644";
 		args[2] = file;
 		args[3] = NULL;
-		*envp = NULL;	
+		*envp = NULL;
 		execve(args[0], args, envp);
-		perror("Could not execve");
+		print_errno("Execve failed");
 	}
 	else
 		wait(NULL);
@@ -139,30 +139,29 @@ void	check_files(char *argv[], t_args *arguments)
 
 	input_fd = 0;
 	output_fd = 1;
-	if (access(argv[1], F_OK) == 0)
-	{
-		input_fd = open(argv[1], O_RDONLY);
-		if (input_fd == -1)
-			print_errno(argv[1]);
-	}
-	else
+	input_fd = open(argv[1], O_RDONLY);
+	if (input_fd == -1)
 		print_errno(argv[1]);
-	if (access(argv[4], F_OK) == 0)
-	{
-		if (access(argv[4], R_OK|W_OK) != 0)
-			change_permissions(argv[4]);
-		output_fd = open(argv[4], O_WRONLY|O_TRUNC);
-		if (output_fd == -1)
-			print_errno(argv[4]);
-	}
-	else
-	{
-		output_fd = open(argv[4], O_CREAT|O_WRONLY|O_TRUNC);
-		write(1, "File created\n", 13);
-		if (output_fd == -1)
-			print_errno(argv[4]);
-		change_permissions(argv[4]);
-	}
+	/*Modificar permisos solo cuando lo creas*/
+	output_fd = open(argv[4], O_CREAT | O_WRONLY | O_TRUNC, 0644);
+	if (output_fd == -1)
+		print_errno(argv[4]);
+	//change_permissions(argv[4]);
+	// if (access(argv[4], F_OK) == 0)
+	// {
+	// 	if (access(argv[4], R_OK | W_OK) != 0)
+	// 		change_permissions(argv[4]);
+	// 	output_fd = open(argv[4], O_WRONLY | O_TRUNC);
+	// 	if (output_fd == -1)
+	// 		print_errno(argv[4]);
+	// }
+	// else
+	// {
+	// 	output_fd = open(argv[4], O_CREAT | O_WRONLY | O_TRUNC);
+	// 	if (output_fd == -1)
+	// 		print_errno(argv[4]);
+	// 	change_permissions(argv[4]);
+	// }
 	arguments->input_file = input_fd;
 	arguments->output_file = output_fd;
 }
@@ -181,7 +180,7 @@ char	*get_fullcommand(char *short_cmd, char **path)
 		if (!aux)
 			custom_error("Error: Could not allocate memory");
 		full_command = aux;
-		if (access(full_command, F_OK|X_OK) == 0)
+		if (access(full_command, F_OK | X_OK) == 0)
 		{
 			free(short_cmd);
 			return (full_command);
@@ -195,7 +194,7 @@ char	*get_fullcommand(char *short_cmd, char **path)
 
 char	*check_command(t_cmd cmd, char **path)
 {
-	if (access(cmd.command, F_OK|X_OK) == 0)
+	if (access(cmd.command, F_OK | X_OK) == 0)
 		return (cmd.command);
 	else
 		return (get_fullcommand(cmd.command, path));
@@ -208,7 +207,7 @@ void	parse_input(int argc, char *argv[], char *envp[], t_args *arguments)
 	check_files(argv, arguments);
 	search_path(envp, arguments);
 	arguments->cmd1 = assign_command(argv[2]);
-	arguments->cmd2 = assign_command(argv[3]);	
+	arguments->cmd2 = assign_command(argv[3]);
 	arguments->cmd1.command = check_command(arguments->cmd1, arguments->path);
 	arguments->cmd2.command = check_command(arguments->cmd2, arguments->path);
 }
