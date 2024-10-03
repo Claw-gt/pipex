@@ -6,7 +6,7 @@
 /*   By: clagarci <clagarci@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/24 14:02:03 by clagarci          #+#    #+#             */
-/*   Updated: 2024/10/03 13:31:59 by clagarci         ###   ########.fr       */
+/*   Updated: 2024/10/03 14:35:45 by clagarci         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,6 +87,9 @@ t_cmd	assign_command(char *arg)
 	t_cmd	cmd;
 	int		i;
 
+	// cmd = (t_cmd){0, 0, 0};
+	// if (arg[0] == '\0')
+	// 	return (cmd);
 	i = 0;
 	cmd.cmd_str = ft_split(arg, ' ');
 	if (!cmd.cmd_str)
@@ -188,12 +191,16 @@ char	*get_fullcommand(char *short_cmd, char **path)
 		free(aux);
 	}
 	ft_putstr_fd(short_cmd, 2);
-	custom_error(": command not found\n");
-	return (NULL);
+	ft_putstr_fd(": command not found\n", 2);
+	free(short_cmd);
+	//custom_error(": command not found\n");
+	return (0);
 }
 
 char	*check_command(t_cmd cmd, char **path)
 {
+	// if (cmd.command == 0)
+	// 	return (0);
 	if (access(cmd.command, F_OK | X_OK) == 0)
 		return (cmd.command);
 	else

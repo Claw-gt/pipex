@@ -6,7 +6,7 @@
 /*   By: clagarci <clagarci@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/03 14:08:46 by clagarci          #+#    #+#             */
-/*   Updated: 2024/10/03 14:10:22 by clagarci         ###   ########.fr       */
+/*   Updated: 2024/10/03 14:22:10 by clagarci         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,14 +19,14 @@ void	parent(int *pipe_fd, int *pid)
 
 	close(pipe_fd[READ_END]);
 	wait_pid[0] = waitpid(pid[0], &status[0], 0);
-	printf("WAit pid %d Status: %d", wait_pid[0], WEXITSTATUS(status[0]));
+	printf("WAit pid %d Status: %d\n", wait_pid[0], WEXITSTATUS(status[0]));
 	wait_pid[1] = waitpid(pid[1], &status[1], 0);
-	printf("Status: %d", WEXITSTATUS(status[1]));
+	printf("Status: %d\n", WEXITSTATUS(status[1]));
 	if (wait_pid[0] == -1 || wait_pid[1] == -1)
 		print_errno("Wait failed");
-	else if (WEXITSTATUS(status[0]) != EXIT_SUCCESS || \
-			WEXITSTATUS(status[1]) != EXIT_SUCCESS)
-		custom_error("Error: Child process failed");
+	// else if (WEXITSTATUS(status[0]) != EXIT_SUCCESS ||
+	// 		WEXITSTATUS(status[1]) != EXIT_SUCCESS)
+	// 	custom_error("Error: Child process failed");
 }
 
 void	child1(t_args arguments, int *pipe_fd, char **envp)
