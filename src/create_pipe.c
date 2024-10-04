@@ -6,7 +6,7 @@
 /*   By: clagarci <clagarci@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/03 14:08:46 by clagarci          #+#    #+#             */
-/*   Updated: 2024/10/03 14:22:10 by clagarci         ###   ########.fr       */
+/*   Updated: 2024/10/04 14:40:26 by clagarci         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,9 +33,9 @@ void	child1(t_args arguments, int *pipe_fd, char **envp)
 {
 	close(pipe_fd[READ_END]);
 	if (dup2(arguments.input_file, STDIN_FILENO) == -1)
-		print_errno("dup2 (infile) failed");
+		exit(EXIT_FAILURE);
 	if (dup2(pipe_fd[WRITE_END], STDOUT_FILENO) == -1)
-		print_errno("dup2 (write end) failed");
+		exit(EXIT_FAILURE);
 	close(arguments.input_file);
 	close(pipe_fd[WRITE_END]);
 	execute_cmd(envp, arguments.cmd1);
@@ -44,9 +44,9 @@ void	child1(t_args arguments, int *pipe_fd, char **envp)
 void	child2(t_args arguments, int *pipe_fd, char **envp)
 {
 	if (dup2(pipe_fd[READ_END], STDIN_FILENO) == -1)
-		print_errno("dup2 (read end) failed");
+		exit(EXIT_FAILURE);
 	if (dup2(arguments.output_file, STDOUT_FILENO) == -1)
-		print_errno("dup2 (outfile) failed");
+		exit(EXIT_FAILURE);
 	// ya tenemos dos fds que apuntan a lo mismo. Cerramos uno
 	close(pipe_fd[READ_END]);
 	close(arguments.output_file);

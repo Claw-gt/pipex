@@ -6,7 +6,7 @@
 /*   By: clagarci <clagarci@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/29 19:48:46 by clagarci          #+#    #+#             */
-/*   Updated: 2024/10/04 13:20:16 by clagarci         ###   ########.fr       */
+/*   Updated: 2024/10/04 14:02:12 by clagarci         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,5 @@ void	execute_cmd(char **envp, t_cmd cmd)
 	argv[i] = NULL;
 	execve(argv[0], argv, envp);
 	free_array(argv);
-	//if (DEBUG == 1)
-		print_errno("");
-	//exit (EXIT_FAILURE);
+	print_errno("");
 }

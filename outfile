@@ -1,9 +1,0 @@
-       pipe - Postfix delivery to external command$
-       pipe [generic Postfix daemon options] command_attributes...$
-       The  pipe(8) daemon processes requests from the Postfix queue manager to deliver messages to external commands.  This program exM-bM-^@M-^P$
-       The  pipe(8) daemon updates queue files and marks recipients as finished, or it informs the queue manager that delivery should be$
-       in  the  Postfix  main.cf file, where transport is the name in the first column of the Postfix master.cf entry for the pipe-based$
-              Caution: a null sender address is easily mis-parsed by naive software. For example, when the  pipe(8)  daemon  executes  a$
-       Changes to main.cf are picked up automatically as pipe(8) processes run for only a limited amount of time. Use the command "postM-bM-^@M-^P$
-       pipe_delivery_status_filter ($default_delivery_status_filter)$
-              Optional filter for the pipe(8) delivery agent to change the delivery status code or explanatory text of successful or unM-bM-^@M-^P$
