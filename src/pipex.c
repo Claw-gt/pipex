@@ -6,7 +6,7 @@
 /*   By: clagarci <clagarci@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/24 14:02:03 by clagarci          #+#    #+#             */
-/*   Updated: 2024/10/03 15:28:21 by clagarci         ###   ########.fr       */
+/*   Updated: 2024/10/04 13:57:33 by clagarci         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,6 +81,18 @@ void	search_path(char *envp[], t_args *arguments)
 	}
 	arguments->path = full_path;
 }
+t_cmd	empty_command(char *c)
+{
+	t_cmd	cmd;
+	
+	cmd.cmd_str = ft_calloc(2, sizeof(char *));
+	if (!cmd.cmd_str)
+		custom_error("Error: Could not allocate memory");
+	cmd.cmd_str[0] = ft_strdup(c);
+	cmd.command = ft_strdup(c);
+	cmd.flags = NULL;
+	return (cmd);
+}
 
 t_cmd	assign_command(char *arg)
 {
@@ -88,13 +100,36 @@ t_cmd	assign_command(char *arg)
 	int		i;
 
 	i = 0;
+	if (arg[0] == 0)
+	{
+		// Si el comando es '\0'
+		return(empty_command("\0"));
+		// cmd.cmd_str = ft_calloc(2, sizeof(char *));
+		// if (!cmd.cmd_str)
+		// 	custom_error("Error: Could not allocate memory");
+		// cmd.cmd_str[0] = ft_strdup("");
+		// cmd.command = ft_strdup("");
+		// cmd.flags = NULL;
+		// return (cmd);
+	}
 	cmd.cmd_str = ft_split(arg, ' ');
 	if (!cmd.cmd_str)
 		custom_error("Error: Could not allocate memory");
+	/*The following commented code does not give the correpondent error -> Permission denied
+	Also, it does not diferentiate between "" and " "*/
+	write(1, "cmd: \n", 5);
+	write(1, cmd.cmd_str[0], 1);
 	if (cmd.cmd_str[0] == NULL)
 	{
+		// Si el comando es ' '
+		// write(1, "empty\n", 6);
 		free_array(cmd.cmd_str);
-		return ((t_cmd){0, 0, 0});
+		return(empty_command(" "));
+		// cmd.cmd_str = ft_calloc(2, sizeof(char *));
+		// cmd.cmd_str[0] = ft_strdup(" ");
+		// cmd.command = ft_strdup(" ");
+		// cmd.flags = NULL;
+		// return (cmd);
 	}
 	cmd.command = ft_strdup(cmd.cmd_str[0]);
 	if (!cmd.command)
@@ -147,26 +182,9 @@ void	check_files(char *argv[], t_args *arguments)
 	input_fd = open(argv[1], O_RDONLY);
 	if (input_fd == -1)
 		print_errno(argv[1]);
-	/*Modificar permisos solo cuando lo creas*/
 	output_fd = open(argv[4], O_CREAT | O_WRONLY | O_TRUNC, 0644);
 	if (output_fd == -1)
 		print_errno(argv[4]);
-	//change_permissions(argv[4]);
-	// if (access(argv[4], F_OK) == 0)
-	// {
-	// 	if (access(argv[4], R_OK | W_OK) != 0)
-	// 		change_permissions(argv[4]);
-	// 	output_fd = open(argv[4], O_WRONLY | O_TRUNC);
-	// 	if (output_fd == -1)
-	// 		print_errno(argv[4]);
-	// }
-	// else
-	// {
-	// 	output_fd = open(argv[4], O_CREAT | O_WRONLY | O_TRUNC);
-	// 	if (output_fd == -1)
-	// 		print_errno(argv[4]);
-	// 	change_permissions(argv[4]);
-	// }
 	arguments->input_file = input_fd;
 	arguments->output_file = output_fd;
 }
