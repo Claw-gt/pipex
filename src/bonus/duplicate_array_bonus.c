@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   duplicate_array.c                                  :+:      :+:    :+:   */
+/*   duplicate_array_bonus.c                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: clagarci <clagarci@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/07 16:19:10 by clagarci          #+#    #+#             */
-/*   Updated: 2024/10/07 16:21:18 by clagarci         ###   ########.fr       */
+/*   Updated: 2024/10/07 17:40:42 by clagarci         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../inc/pipex.h"
+#include "../../inc/pipex_bonus.h"
 
 char	**duplicate(char **array)
 {
