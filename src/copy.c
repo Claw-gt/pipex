@@ -6,7 +6,7 @@
 /*   By: clagarci <clagarci@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/23 17:20:20 by clagarci          #+#    #+#             */
-/*   Updated: 2024/10/02 12:41:42 by clagarci         ###   ########.fr       */
+/*   Updated: 2024/10/07 15:50:12 by clagarci         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -131,44 +131,57 @@ void	change_permissions(char *file)
 }
 
 /*if open() fails, -1 is returned and errno is set to indicate the error.
-The same happens with access().
-When it creates outfile, it has no permissions at all*/
+The same happens with access().*/
+/*Must display error of infile (no exist) and of utfile (permission denied)*/
 void	check_files(char *argv[], t_args *arguments)
 {
-	int	input_fd;
-	int	output_fd;
+	int		input_fd;
+	int		output_fd;
+	int		file_error[2];
+	// pid_t	files_pid[2];
+	// int		status[2];
 
 	input_fd = 0;
 	output_fd = 1;
-	if (access(argv[1], F_OK) == 0)
+	input_fd = open(argv[1], O_RDONLY);
+	if (input_fd == -1)
 	{
-		input_fd = open(argv[1], O_RDONLY);
-		if (input_fd == -1)
-			print_errno(argv[1]);
+		perror(argv[1]);
+		file_error[0] = 1;
+		//print_errno(argv[1]);
 	}
-	else
-		print_errno(argv[1]);
-	if (access(argv[4], F_OK) == 0)
+	output_fd = open(argv[4], O_CREAT | O_WRONLY | O_TRUNC, 0644);
+	if (output_fd == -1)
 	{
-		if (access(argv[4], R_OK|W_OK) != 0)
-			change_permissions(argv[4]);
-		output_fd = open(argv[4], O_WRONLY|O_TRUNC);
-		if (output_fd == -1)
-			print_errno(argv[4]);
+		perror(argv[4]);
+		file_error[1] = 1;
+		//print_errno(argv[4]);
 	}
-	else
-	{
-		output_fd = open(argv[4], O_CREAT|O_WRONLY|O_TRUNC);
-		write(1, "File created\n", 13);
-		if (output_fd == -1)
-			print_errno(argv[4]);
-		change_permissions(argv[4]);
-	}
+	// files_pid[0] = fork();
+	// if (files_pid[0] == 0)
+	// {
+	// 	if (input_fd == -1)
+	// 		print_errno(argv[1]);
+	// 	exit(EXIT_SUCCESS);
+	// }
+	// output_fd = open(argv[4], O_CREAT | O_WRONLY | O_TRUNC, 0644);
+	// files_pid[1] = fork();
+	// if (files_pid[1] == 0)
+	// {
+	// 	if (output_fd == -1)
+	// 		print_errno(argv[4]);
+	// 	exit(EXIT_SUCCESS);
+	// }
+	// wait(&status[0]);
+	// wait(&status[1]);
+	// // Si ambos archivos fallan -> parar el programa
+	// if (WEXITSTATUS(status[0]) != EXIT_SUCCESS && 
+	// 	WEXITSTATUS(status[1]) != EXIT_SUCCESS)
+	// 	exit(EXIT_FAILURE);
+	if (file_error[0] == 1 && file_error[1] == 1)
+		exit(EXIT_FAILURE);
 	arguments->input_file = input_fd;
 	arguments->output_file = output_fd;
-	// printf("input fd: %d output fd: %d", input_fd, output_fd);
-	// close (input_fd);
-	// close (output_fd);
 }
 
 char	*check_command(t_cmd cmd, t_args *arguments)

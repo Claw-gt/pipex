@@ -6,7 +6,7 @@
 #    By: clagarci <clagarci@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/09/01 11:06:50 by clagarci          #+#    #+#              #
-#    Updated: 2024/10/03 14:09:41 by clagarci         ###   ########.fr        #
+#    Updated: 2024/10/07 16:20:16 by clagarci         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,7 +14,7 @@ NAME = pipex
 
 
 LIBDIR = libft/
-MY_SOURCES = src/pipex.c  src/errors.c src/create_pipe.c src/execute_cmd.c src/free_elements.c #src/trying.c 
+MY_SOURCES = src/pipex.c  src/check_command.c src/create_pipe.c src/execute_cmd.c src/duplicate_array.c src/errors.c  src/free_elements.c
 
 MY_OBJECTS = $(MY_SOURCES:.c=.o)
 

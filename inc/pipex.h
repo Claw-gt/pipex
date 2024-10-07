@@ -6,7 +6,7 @@
 /*   By: clagarci <clagarci@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/23 17:23:15 by clagarci          #+#    #+#             */
-/*   Updated: 2024/10/03 14:20:30 by clagarci         ###   ########.fr       */
+/*   Updated: 2024/10/07 16:22:45 by clagarci         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,17 +39,22 @@ typedef struct s_args
 	t_cmd	cmd2;
 }				t_args;
 
-void    print_errno(char *str);
+void	print_errno(char *str);
 
-void    custom_error(char *str);
+void	custom_error(char *str);
 
-void    execute_cmd(char **envp, t_cmd cmd);
+char	*check_command(t_cmd cmd, char **path, int file);
+
+t_cmd	assign_command(char *arg);
+
+void	execute_cmd(char **envp, t_cmd cmd);
 
 void	create_pipe(t_args arguments, char **envp);
+
+char	**duplicate(char **array);
 
 void	free_elements(t_args *arguments);
 
 void	free_array(char **array);
 
-void	free_partial(char **arr, int num);
 #endif

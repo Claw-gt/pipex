@@ -6,24 +6,11 @@
 /*   By: clagarci <clagarci@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/02 12:16:10 by clagarci          #+#    #+#             */
-/*   Updated: 2024/10/04 13:39:00 by clagarci         ###   ########.fr       */
+/*   Updated: 2024/10/07 16:07:37 by clagarci         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../inc/pipex.h"
-
-// void	free_partial(char **arr, int num)
-// {
-// 	int	i;
-
-// 	i = 0;
-// 	while (i < num)
-// 	{
-// 		free (arr[i]);
-// 		i++;
-// 	}
-// 	free (arr);
-// }
 
 void	free_array(char **array)
 {
