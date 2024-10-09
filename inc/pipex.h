@@ -6,7 +6,7 @@
 /*   By: clagarci <clagarci@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/23 17:23:15 by clagarci          #+#    #+#             */
-/*   Updated: 2024/10/07 16:22:45 by clagarci         ###   ########.fr       */
+/*   Updated: 2024/10/09 17:27:44 by clagarci         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,8 @@ typedef struct s_args
 }				t_args;
 
 void	print_errno(char *str);
+
+void	command_error(char *cmd);
 
 void	custom_error(char *str);
 

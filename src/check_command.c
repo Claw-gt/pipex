@@ -6,7 +6,7 @@
 /*   By: clagarci <clagarci@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/07 16:09:50 by clagarci          #+#    #+#             */
-/*   Updated: 2024/10/07 16:14:27 by clagarci         ###   ########.fr       */
+/*   Updated: 2024/10/09 17:32:10 by clagarci         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,10 +67,7 @@ char	*get_fullcommand(char *short_cmd, char **path, int file)
 		path++;
 	}
 	if (file != -1)
-	{
-		ft_putstr_fd(short_cmd, 2);
-		ft_putstr_fd(": command not found\n", 2);
-	}
+		command_error(short_cmd);
 	free(short_cmd);
 	return (0);
 }

@@ -6,7 +6,7 @@
 /*   By: clagarci <clagarci@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/03 14:08:46 by clagarci          #+#    #+#             */
-/*   Updated: 2024/10/07 15:54:21 by clagarci         ###   ########.fr       */
+/*   Updated: 2024/10/09 15:37:53 by clagarci         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,9 +19,9 @@ void	parent(int *pipe_fd, int *pid)
 
 	close(pipe_fd[READ_END]);
 	wait_pid[0] = waitpid(pid[0], &status[0], 0);
-	printf("Status: %d\n", WEXITSTATUS(status[0]));
+	//printf("Status: %d\n", WEXITSTATUS(status[0]));
 	wait_pid[1] = waitpid(pid[1], &status[1], 0);
-	printf("Status: %d\n", WEXITSTATUS(status[1]));
+	//printf("Status: %d\n", WEXITSTATUS(status[1]));
 	if (wait_pid[0] == -1 || wait_pid[1] == -1)
 		print_errno("Wait failed");
 	// else if (WEXITSTATUS(status[0]) != EXIT_SUCCESS ||
