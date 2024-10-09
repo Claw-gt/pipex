@@ -6,7 +6,7 @@
 /*   By: clagarci <clagarci@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/24 14:02:03 by clagarci          #+#    #+#             */
-/*   Updated: 2024/10/07 16:22:13 by clagarci         ###   ########.fr       */
+/*   Updated: 2024/10/09 16:20:04 by clagarci         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,7 +89,8 @@ void	parse_input(int argc, char *argv[], char *envp[], t_args *arguments)
 	if (argc != 5)
 		custom_error("Error: Wrong number of arguments\n");
 	check_files(argv, arguments);
-	search_path(envp, arguments);
+	if (envp)
+		search_path(envp, arguments);
 	arguments->cmd1 = assign_command(argv[2]);
 	arguments->cmd2 = assign_command(argv[3]);
 	arguments->cmd1.command = check_command(arguments->cmd1, arguments->path, \
@@ -105,6 +106,6 @@ int	main(int argc, char *argv[], char *envp[])
 	parse_input(argc, argv, envp, &arguments);
 	create_pipe(arguments, envp);
 	free_elements(&arguments);
-	write(1, "Main program started\n", 21);
+	//write(1, "Main program started\n", 21);
 	return (0);
 }
