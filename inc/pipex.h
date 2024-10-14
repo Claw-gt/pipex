@@ -6,7 +6,7 @@
 /*   By: clagarci <clagarci@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/23 17:23:15 by clagarci          #+#    #+#             */
-/*   Updated: 2024/10/09 17:27:44 by clagarci         ###   ########.fr       */
+/*   Updated: 2024/10/14 11:59:00 by clagarci         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,6 @@
 # include <errno.h>
 # include <fcntl.h>
 # include "../libft/libft.h"
-# define DEBUG 1
 # define READ_END 0
 # define WRITE_END 1
 
