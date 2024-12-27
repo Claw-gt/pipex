@@ -6,7 +6,7 @@
 #    By: clagarci <clagarci@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/09/01 11:06:50 by clagarci          #+#    #+#              #
-#    Updated: 2024/10/07 17:39:47 by clagarci         ###   ########.fr        #
+#    Updated: 2024/12/27 11:04:56 by clagarci         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -15,8 +15,6 @@ NAME = pipex
 
 LIBDIR = libft/
 MY_SOURCES = src/pipex.c  src/check_command.c src/create_pipe.c src/execute_cmd.c src/duplicate_array.c src/errors.c src/free_elements.c
-MY_BONUS_SOURCES = src/bonus/pipex_bonus.c  src/bonus/check_command_bonus.c src/bonus/create_pipe_bonus.c src/bonus/execute_cmd_bonus.c \
-			src/bonus/duplicate_array_bonus.c src/bonus/errors_bonus.c  src/bonus/free_elements_bonus.c
 
 MY_OBJECTS = $(MY_SOURCES:.c=.o)
 MY_BONUS_OBJECTS = $(MY_BONUS_SOURCES:.c=.o)
@@ -37,11 +35,6 @@ $(NAME): $(MY_OBJECTS)
 		make -C $(LIBDIR)
 		$(CC) $(CFLAGS) $(MY_OBJECTS) -o $(NAME) $(LIB_FLAGS)
 		@echo "\n Compilation of $(NAME):  $(GREEN)SUCCESS!"
-
-bonus: $(MY_BONUS_OBJECTS)
-		make -C $(LIBDIR)
-		$(CC) $(CFLAGS) $(MY_BONUS_OBJECTS) -o $(NAME) $(LIB_FLAGS)
-		@echo "\n Compilation of bonus:  $(GREEN)SUCCESS!"
 
 clean:
 	rm -f $(MY_OBJECTS)

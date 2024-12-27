@@ -6,7 +6,7 @@
 /*   By: clagarci <clagarci@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/09/24 14:02:03 by clagarci          #+#    #+#             */
-/*   Updated: 2024/10/09 17:34:55 by clagarci         ###   ########.fr       */
+/*   Updated: 2024/12/27 11:18:28 by clagarci         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,7 @@ void	check_files(char *argv[], t_args *arguments)
 		perror(argv[4]);
 		file_error[1] = 1;
 	}
-	if (file_error[0] == 1 || file_error[1] == 1)
+	if (file_error[0] == 1 && file_error[1] == 1)
 		exit(EXIT_FAILURE);
 	arguments->input_file = input_fd;
 	arguments->output_file = output_fd;
